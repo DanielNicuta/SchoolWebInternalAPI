@@ -1,41 +1,50 @@
+using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Domain.Entities;
+using SchoolWebInternalAPI.Infrastructure.Data;
 
-namespace SchoolWebInternalAPI.Infrastructure.Repositories;
-
-public class TeacherRepository : ITeacherRepository
+namespace SchoolWebInternalAPI.Infrastructure.Repositories
 {
-    // Fake in-memory for now
-    private readonly List<Teacher> _teachers = new();
-
-    public Task<IEnumerable<Teacher>> GetAllAsync() =>
-        Task.FromResult(_teachers.AsEnumerable());
-
-    public Task<Teacher?> GetByIdAsync(Guid id) =>
-        Task.FromResult(_teachers.FirstOrDefault(t => t.Id == id));
-
-    public Task AddAsync(Teacher teacher)
+    public class TeacherRepository : ITeacherRepository
     {
-        _teachers.Add(teacher);
-        return Task.CompletedTask;
-    }
+        private readonly SchoolDbContext _context;
 
-    public Task UpdateAsync(Teacher teacher)
-    {
-        var existing = _teachers.FirstOrDefault(t => t.Id == teacher.Id);
-        if (existing != null)
+        public TeacherRepository(SchoolDbContext context)
         {
-            existing.Name = teacher.Name;
+            _context = context;
         }
-        return Task.CompletedTask;
-    }
 
-    public Task DeleteAsync(Guid id)
-    {
-        var teacher = _teachers.FirstOrDefault(t => t.Id == id);
-        if (teacher != null)
-            _teachers.Remove(teacher);
+        public async Task<List<Teacher>> GetAllAsync()
+        {
+            return await _context.Teachers.ToListAsync();
+        }
 
-        return Task.CompletedTask;
+        public async Task<Teacher?> GetByIdAsync(int id)
+        {
+            return await _context.Teachers.FindAsync(id);
+        }
+
+        public async Task<Teacher> AddAsync(Teacher teacher)
+        {
+            _context.Teachers.Add(teacher);
+            await _context.SaveChangesAsync();
+            return teacher;
+        }
+
+        public async Task<bool> UpdateAsync(Teacher teacher)
+        {
+            _context.Teachers.Update(teacher);
+            return (await _context.SaveChangesAsync()) > 0;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var teacher = await _context.Teachers.FindAsync(id);
+            if (teacher == null)
+                return false;
+
+            _context.Teachers.Remove(teacher);
+            return (await _context.SaveChangesAsync()) > 0;
+        }
     }
 }

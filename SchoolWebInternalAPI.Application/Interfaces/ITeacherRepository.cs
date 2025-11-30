@@ -1,12 +1,13 @@
-namespace SchoolWebInternalAPI.Application.Interfaces;
-
 using SchoolWebInternalAPI.Domain.Entities;
 
-public interface ITeacherRepository
+namespace SchoolWebInternalAPI.Application.Interfaces
 {
-    Task<IEnumerable<Teacher>> GetAllAsync();
-    Task<Teacher?> GetByIdAsync(Guid id);
-    Task AddAsync(Teacher teacher);
-    Task UpdateAsync(Teacher teacher);
-    Task DeleteAsync(Guid id);
+    public interface ITeacherRepository
+    {
+        Task<List<Teacher>> GetAllAsync();
+        Task<Teacher?> GetByIdAsync(int id);
+        Task<Teacher> AddAsync(Teacher teacher);
+        Task<bool> UpdateAsync(Teacher teacher);
+        Task<bool> DeleteAsync(int id);
+    }
 }

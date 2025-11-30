@@ -1,9 +1,9 @@
-using SchoolWebInternalAPI.Application.Common.Interfaces;
+using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Domain.Entities;
 
 namespace SchoolWebInternalAPI.Application.Services
 {
-    public class TeacherService
+    public class TeacherService : ITeacherService
     {
         private readonly ITeacherRepository _teacherRepository;
 
@@ -12,19 +12,19 @@ namespace SchoolWebInternalAPI.Application.Services
             _teacherRepository = teacherRepository;
         }
 
-        public Task<List<Teacher>> GetAllAsync() =>
-            _teacherRepository.GetAllAsync();
+        public Task<List<Teacher>> GetAllTeachersAsync()
+            => _teacherRepository.GetAllAsync();
 
-        public Task<Teacher?> GetByIdAsync(int id) =>
-            _teacherRepository.GetByIdAsync(id);
+        public Task<Teacher?> GetTeacherByIdAsync(int id)
+            => _teacherRepository.GetByIdAsync(id);
 
-        public Task AddAsync(Teacher teacher) =>
-            _teacherRepository.AddAsync(teacher);
+        public Task<Teacher> CreateTeacherAsync(Teacher teacher)
+            => _teacherRepository.AddAsync(teacher);
 
-        public Task UpdateAsync(Teacher teacher) =>
-            _teacherRepository.UpdateAsync(teacher);
+        public Task<bool> UpdateTeacherAsync(Teacher teacher)
+            => _teacherRepository.UpdateAsync(teacher);
 
-        public Task DeleteAsync(Teacher teacher) =>
-            _teacherRepository.DeleteAsync(teacher);
+        public Task<bool> DeleteTeacherAsync(int id)
+            => _teacherRepository.DeleteAsync(id);
     }
 }

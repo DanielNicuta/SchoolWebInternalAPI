@@ -1,55 +1,86 @@
 using Microsoft.AspNetCore.Mvc;
-using SchoolWebInternalAPI.Application.DTOs;
 using SchoolWebInternalAPI.Application.Interfaces;
+using SchoolWebInternalAPI.Domain.Entities;
 
-namespace SchoolWebInternalAPI.Api.Controllers
+namespace SchoolWebInternalAPI.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TeachersController : ControllerBase
+    public class TeacherController : ControllerBase
     {
-        private readonly ITeacherService _service;
+        private readonly ITeacherService _teacherService;
 
-        public TeachersController(ITeacherService service)
+        public TeacherController(ITeacherService teacherService)
         {
-            _service = service;
+            _teacherService = teacherService;
         }
 
+        // GET: api/teacher
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllTeachers()
         {
-            var list = await _service.GetAllAsync();
-            return Ok(list);
+            var teachers = await _teacherService.GetAllTeachersAsync();
+            return Ok(teachers);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        // GET: api/teacher/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTeacherById(int id)
         {
-            var item = await _service.GetByIdAsync(id);
-            if (item is null) return NotFound();
-            return Ok(item);
+            var teacher = await _teacherService.GetTeacherByIdAsync(id);
+
+            if (teacher == null)
+                return NotFound();
+
+            return Ok(teacher);
         }
 
+        // POST: api/teacher
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TeacherDto dto)
+        public async Task<IActionResult> CreateTeacher([FromBody] Teacher teacher)
         {
-            var created = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _teacherService.CreateTeacherAsync(teacher);
+
+            return CreatedAtAction(
+                nameof(GetTeacherById),
+                new { id = created.Id },
+                created
+            );
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] TeacherDto dto)
+        // PUT: api/teacher/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTeacher(int id, [FromBody] Teacher teacher)
         {
-            var ok = await _service.UpdateAsync(id, dto);
-            if (!ok) return NotFound();
+            if (id != teacher.Id)
+                return BadRequest("ID mismatch.");
+
+            var existing = await _teacherService.GetTeacherByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+
+            var success = await _teacherService.UpdateTeacherAsync(teacher);
+            if (!success)
+                return StatusCode(500, "Failed to update teacher.");
+
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        // DELETE: api/teacher/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTeacher(int id)
         {
-            var ok = await _service.DeleteAsync(id);
-            if (!ok) return NotFound();
+            var existing = await _teacherService.GetTeacherByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+
+            var success = await _teacherService.DeleteTeacherAsync(id);
+            if (!success)
+                return StatusCode(500, "Failed to delete teacher.");
+
             return NoContent();
         }
     }
