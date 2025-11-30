@@ -59,7 +59,7 @@ namespace SchoolWebInternalAPI.API.Controllers
 
             var updated = await _teacherService.UpdateTeacherAsync(dto);
 
-            if (updated == null)
+            if (!updated)
                 return NotFound();
 
             return Ok(updated);

@@ -7,7 +7,7 @@ namespace SchoolWebInternalAPI.Application.Interfaces
         Task<List<TeacherResponseDto>> GetAllTeachersAsync();
         Task<TeacherResponseDto?> GetTeacherByIdAsync(int id);
         Task<TeacherResponseDto> CreateTeacherAsync(TeacherCreateDto teacher);
-        Task<TeacherResponseDto> UpdateTeacherAsync(TeacherUpdateDto teacher);
+        Task<bool> UpdateTeacherAsync(TeacherUpdateDto teacher);
         Task<bool> DeleteTeacherAsync(int id);
     }
 }

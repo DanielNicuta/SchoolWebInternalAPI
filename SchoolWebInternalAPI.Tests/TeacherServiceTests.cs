@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Moq;
-using Xunit;
+using AutoMapper;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Application.Services;
+using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Domain.Entities;
 
 namespace SchoolWebInternalAPI.Tests
@@ -12,35 +11,45 @@ namespace SchoolWebInternalAPI.Tests
     {
         private readonly Mock<ITeacherRepository> _teacherRepoMock;
         private readonly ITeacherService _teacherService;
+        private readonly IMapper _mapper;
 
         public TeacherServiceTests()
         {
             _teacherRepoMock = new Mock<ITeacherRepository>();
-            _teacherService = new TeacherService(_teacherRepoMock.Object);
+
+            // AutoMapper config for tests
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Teacher, TeacherResponseDto>();
+                cfg.CreateMap<TeacherCreateDto, Teacher>();
+                cfg.CreateMap<TeacherUpdateDto, Teacher>();
+            });
+
+            _mapper = config.CreateMapper();
+
+            _teacherService = new TeacherService(_teacherRepoMock.Object, _mapper);
         }
 
         [Fact]
-        public async Task GetAllTeachersAsync_ReturnsList()
+        public async Task GetAllTeachersAsync_ReturnsMappedDtos()
         {
-            // Arrange
-            var expected = new List<Teacher>
+            var teachers = new List<Teacher>
             {
                 new() { Id = 1, FirstName = "John", LastName = "Doe" }
             };
 
             _teacherRepoMock
                 .Setup(r => r.GetAllAsync())
-                .ReturnsAsync(expected);
+                .ReturnsAsync(teachers);
 
-            // Act
             var result = await _teacherService.GetAllTeachersAsync();
 
-            // Assert
             Assert.Single(result);
+            Assert.IsType<List<TeacherResponseDto>>(result);
         }
 
         [Fact]
-        public async Task GetTeacherByIdAsync_ReturnsTeacher()
+        public async Task GetTeacherByIdAsync_ReturnsMappedDto()
         {
             var teacher = new Teacher { Id = 1, FirstName = "John", LastName = "Doe" };
 
@@ -55,30 +64,42 @@ namespace SchoolWebInternalAPI.Tests
         }
 
         [Fact]
-        public async Task CreateTeacherAsync_ReturnsCreatedTeacher()
+        public async Task CreateTeacherAsync_ReturnsCreatedDto()
         {
-            var newTeacher = new Teacher { FirstName = "Alex", LastName = "Pop" };
-            var createdTeacher = new Teacher { Id = 5, FirstName = "Alex", LastName = "Pop" };
+            var dto = new TeacherCreateDto { FirstName = "Alex", LastName = "Pop" };
+
+            var createdEntity = new Teacher
+            {
+                Id = 10,
+                FirstName = "Alex",
+                LastName = "Pop"
+            };
 
             _teacherRepoMock
-                .Setup(r => r.AddAsync(newTeacher))
-                .ReturnsAsync(createdTeacher);
+                .Setup(r => r.AddAsync(It.IsAny<Teacher>()))
+                .ReturnsAsync(createdEntity);
 
-            var result = await _teacherService.CreateTeacherAsync(newTeacher);
+            var result = await _teacherService.CreateTeacherAsync(dto);
 
-            Assert.Equal(5, result.Id);
+            Assert.NotNull(result);
+            Assert.Equal(10, result.Id);
         }
 
         [Fact]
         public async Task UpdateTeacherAsync_ReturnsTrue()
         {
-            var teacher = new Teacher { Id = 1, FirstName = "John", LastName = "Doe" };
+            var dto = new TeacherUpdateDto
+            {
+                Id = 1,
+                FirstName = "New",
+                LastName = "Name"
+            };
 
             _teacherRepoMock
-                .Setup(r => r.UpdateAsync(teacher))
+                .Setup(r => r.UpdateAsync(It.IsAny<Teacher>()))
                 .ReturnsAsync(true);
 
-            var result = await _teacherService.UpdateTeacherAsync(teacher);
+            var result = await _teacherService.UpdateTeacherAsync(dto);
 
             Assert.True(result);
         }

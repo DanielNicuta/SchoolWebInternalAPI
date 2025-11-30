@@ -7,6 +7,7 @@ using SchoolWebInternalAPI.Application.Services;
 using SchoolWebInternalAPI.Infrastructure.Data;
 using SchoolWebInternalAPI.Infrastructure.Repositories;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
+using YourNamespace.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,8 +61,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseHttpsRedirection();
-
+app.UseAuthorization();
 app.MapControllers();
-
-app.Run();
