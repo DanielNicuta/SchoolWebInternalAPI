@@ -1,3 +1,5 @@
+using AutoMapper;
+using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Domain.Entities;
 
@@ -6,25 +8,58 @@ namespace SchoolWebInternalAPI.Application.Services
     public class TeacherService : ITeacherService
     {
         private readonly ITeacherRepository _teacherRepository;
+        private readonly IMapper _mapper;
 
-        public TeacherService(ITeacherRepository teacherRepository)
+        public TeacherService(ITeacherRepository teacherRepository, IMapper mapper)
         {
             _teacherRepository = teacherRepository;
+            _mapper = mapper;
         }
 
-        public Task<List<Teacher>> GetAllTeachersAsync()
-            => _teacherRepository.GetAllAsync();
+        public async Task<List<TeacherResponseDto>> GetAllTeachersAsync()
+        {
+            var teachers = await _teacherRepository.GetAllAsync();
+            return _mapper.Map<List<TeacherResponseDto>>(teachers);
+        }
 
-        public Task<Teacher?> GetTeacherByIdAsync(int id)
-            => _teacherRepository.GetByIdAsync(id);
+        public async Task<TeacherResponseDto?> GetTeacherByIdAsync(int id)
+        {
+            var teacher = await _teacherRepository.GetByIdAsync(id);
+            return teacher == null ? null : _mapper.Map<TeacherResponseDto>(teacher);
+        }
 
-        public Task<Teacher> CreateTeacherAsync(Teacher teacher)
-            => _teacherRepository.AddAsync(teacher);
+        public async Task<TeacherResponseDto> CreateTeacherAsync(TeacherCreateDto dto)
+        {
+            var entity = _mapper.Map<Teacher>(dto);
 
-        public Task<bool> UpdateTeacherAsync(Teacher teacher)
-            => _teacherRepository.UpdateAsync(teacher);
+            var created = await _teacherRepository.AddAsync(entity);
 
-        public Task<bool> DeleteTeacherAsync(int id)
-            => _teacherRepository.DeleteAsync(id);
+            return _mapper.Map<TeacherResponseDto>(created);
+        }
+
+        public async Task<TeacherResponseDto?> UpdateTeacherAsync(TeacherUpdateDto dto)
+        {
+            var existing = await _teacherRepository.GetByIdAsync(dto.Id);
+
+            if (existing == null)
+                return null;
+
+            _mapper.Map(dto, existing);
+
+            await _teacherRepository.UpdateAsync(existing);
+
+            return _mapper.Map<TeacherResponseDto>(existing);
+        }
+
+        public async Task<bool> DeleteTeacherAsync(int id)
+        {
+            var existing = await _teacherRepository.GetByIdAsync(id);
+
+            if (existing == null)
+                return false;
+
+            await _teacherRepository.DeleteAsync(id);
+            return true;
+        }
     }
 }

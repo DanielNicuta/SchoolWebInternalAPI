@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Application.Interfaces;
-using SchoolWebInternalAPI.Domain.Entities;
 
 namespace SchoolWebInternalAPI.API.Controllers
 {
@@ -17,69 +17,62 @@ namespace SchoolWebInternalAPI.API.Controllers
 
         // GET: api/teacher
         [HttpGet]
-        public async Task<IActionResult> GetAllTeachers()
+        public async Task<IActionResult> GetAll()
         {
             var teachers = await _teacherService.GetAllTeachersAsync();
-            return Ok(teachers);
+            return Ok(teachers); // Already DTOs
         }
 
         // GET: api/teacher/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTeacherById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var teacher = await _teacherService.GetTeacherByIdAsync(id);
 
             if (teacher == null)
                 return NotFound();
 
-            return Ok(teacher);
+            return Ok(teacher); // Already DTO
         }
 
         // POST: api/teacher
         [HttpPost]
-        public async Task<IActionResult> CreateTeacher([FromBody] Teacher teacher)
+        public async Task<IActionResult> Create([FromBody] TeacherCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _teacherService.CreateTeacherAsync(teacher);
+            var created = await _teacherService.CreateTeacherAsync(dto);
 
-            return CreatedAtAction(
-                nameof(GetTeacherById),
-                new { id = created.Id },
-                created
-            );
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         // PUT: api/teacher/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTeacher(int id, [FromBody] Teacher teacher)
+        public async Task<IActionResult> Update(int id, [FromBody] TeacherUpdateDto dto)
         {
-            if (id != teacher.Id)
-                return BadRequest("ID mismatch.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var existing = await _teacherService.GetTeacherByIdAsync(id);
-            if (existing == null)
+            if (id != dto.Id)
+                return BadRequest("URL ID does not match body ID.");
+
+            var updated = await _teacherService.UpdateTeacherAsync(dto);
+
+            if (updated == null)
                 return NotFound();
 
-            var success = await _teacherService.UpdateTeacherAsync(teacher);
-            if (!success)
-                return StatusCode(500, "Failed to update teacher.");
-
-            return NoContent();
+            return Ok(updated);
         }
 
         // DELETE: api/teacher/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTeacher(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _teacherService.GetTeacherByIdAsync(id);
-            if (existing == null)
-                return NotFound();
-
             var success = await _teacherService.DeleteTeacherAsync(id);
+
             if (!success)
-                return StatusCode(500, "Failed to delete teacher.");
+                return NotFound();
 
             return NoContent();
         }

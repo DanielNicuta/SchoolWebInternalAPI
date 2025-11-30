@@ -1,8 +1,12 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using SchoolWebInternalAPI.Application.Validators.Teachers;
 using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Application.Services;
 using SchoolWebInternalAPI.Infrastructure.Data;
 using SchoolWebInternalAPI.Infrastructure.Repositories;
+using SchoolWebInternalAPI.Application.DTOs.Teachers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,7 @@ builder.Services.AddDbContext<SchoolDbContext>(options =>
 // ------------------------------------------------------
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // ------------------------------------------------------
 //  Add Controllers
@@ -29,6 +34,20 @@ builder.Services.AddControllers();
 // ------------------------------------------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// ------------------------------------------------------
+// AutoMapper
+// ------------------------------------------------------
+builder.Services.AddAutoMapper(typeof(Program));
+
+// ------------------------------------------------------
+// FluentValidation
+// ------------------------------------------------------
+builder.Services.AddScoped<IValidator<TeacherCreateDto>, TeacherCreateDtoValidator>();
+builder.Services.AddScoped<IValidator<TeacherUpdateDto>, TeacherUpdateDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+
+
 
 var app = builder.Build();
 
