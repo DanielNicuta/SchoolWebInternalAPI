@@ -1,7 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using SchoolWebInternalAPI.API.Responses;
 
-namespace YourNamespace.Middlewares
+namespace SchoolWebInternalAPI.API.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -22,23 +23,27 @@ namespace YourNamespace.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception caught by middleware");
+                _logger.LogError(ex, "Unhandled exception occurred");
                 await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.ContentType = "application/json";
 
-            var result = JsonSerializer.Serialize(new
+            var response = ApiResponse<string>.Fail(
+                "An unexpected error occurred.",
+                new List<string> { ex.Message }
+            );
+
+            var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {
-                error = ex.Message,
-                details = ex.InnerException?.Message
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            return context.Response.WriteAsync(result);
+            await context.Response.WriteAsync(json);
         }
     }
 }
