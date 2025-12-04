@@ -11,6 +11,8 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
 
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<HomePage> HomePages { get; set; } = null!;
+        public DbSet<ContactPage> ContactPages { get; set; } = null!;
+
         // inside SchoolDbContext (or your DbContext implementation)
         public DbSet<HomePageContent> HomePageContents { get; set; }
         public DbSet<HistoryPageContent> HistoryPageContents { get; set; }
@@ -30,8 +32,9 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
             // Fluent API configurations go here if needed
-            
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchoolDbContext).Assembly);
+
         }
     }
 }

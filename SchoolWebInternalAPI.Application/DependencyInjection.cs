@@ -10,6 +10,7 @@ namespace SchoolWebInternalAPI.Application
         {
             // Register application services here later
             services.AddScoped<IHomePageService, HomePageService>();
+            services.AddScoped<IContactPageService, ContactPageService>();
             
             return services;
         }

@@ -56,6 +56,11 @@ namespace SchoolWebInternalAPI.Application.Mapping
             // HOME
             CreateMap<HomePage, HomePageResponseDto>();
             CreateMap<HomePageUpdateDto, HomePage>();
+
+            // CONTACT
+            CreateMap<ContactPage, ContactPageResponseDto>();
+            CreateMap<ContactPageUpdateDto, ContactPage>();
+
         }
     }
 }
