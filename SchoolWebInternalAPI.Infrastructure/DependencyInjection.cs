@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Infrastructure.Data;
 using SchoolWebInternalAPI.Infrastructure.Repositories;
+using SchoolWebInternalAPI.Application.Interfaces.Pages;
+using SchoolWebInternalAPI.Infrastructure.Repositories.Pages;
 
 namespace SchoolWebInternalAPI.Infrastructure
 {
@@ -20,6 +22,7 @@ namespace SchoolWebInternalAPI.Infrastructure
                 options.UseSqlite(connectionString));
 
             services.AddScoped<ITeacherRepository, TeacherRepository>();
+            services.AddScoped<IHomePageRepository, HomePageRepository>();
 
             return services;
         }

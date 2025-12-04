@@ -1,4 +1,4 @@
-namespace SchoolWebInternalAPI.Domain.Entities.Pages
+namespace SchoolWebInternalAPI.Domain.Entities.PagesCSM
 {
     public class AboutPageContent : BaseEntity
     {

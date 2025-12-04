@@ -1,5 +1,5 @@
 using AutoMapper;
-using SchoolWebInternalAPI.Domain.Entities.Pages;
+using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Home;
 using SchoolWebInternalAPI.Application.DTOs.Pages.History;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Mission;
@@ -9,6 +9,7 @@ using SchoolWebInternalAPI.Application.DTOs.Pages.Links;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Contact;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Settings;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
+using SchoolWebInternalAPI.Domain.Entities.Pages;
 
 namespace SchoolWebInternalAPI.Application.Mapping
 {
@@ -51,6 +52,10 @@ namespace SchoolWebInternalAPI.Application.Mapping
             // FOOTER
             CreateMap<FooterContent, FooterContentResponseDto>();
             CreateMap<FooterContentUpdateDto, FooterContent>();
+
+            // HOME
+            CreateMap<HomePage, HomePageResponseDto>();
+            CreateMap<HomePageUpdateDto, HomePage>();
         }
     }
 }

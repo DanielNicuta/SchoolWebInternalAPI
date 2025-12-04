@@ -1,6 +1,6 @@
 using System;
 
-namespace SchoolWebInternalAPI.Domain.Entities.Pages
+namespace SchoolWebInternalAPI.Domain.Entities.PagesCSM
 {
     public class MissionPageContent : BaseEntity
     {

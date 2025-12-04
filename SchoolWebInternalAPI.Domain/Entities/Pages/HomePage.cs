@@ -1,23 +1,21 @@
-using System;
-
 namespace SchoolWebInternalAPI.Domain.Entities.Pages
 {
-    public class HomePageContent : BaseEntity
+    public class HomePage : BaseEntity
     {
-        // HERO
+        // Hero section
         public string HeroTitle { get; set; } = string.Empty;
         public string? HeroSubtitle { get; set; }
         public string? HeroButtonText { get; set; }
         public string? HeroButtonUrl { get; set; }
         public string? HeroImageUrl { get; set; }
 
-        // ABOUT SECTION ON HOME
+        // About section
         public string? AboutTitle { get; set; }
         public string? AboutSubtitle { get; set; }
-        public string? AboutHtml { get; set; }      // rich text / HTML
+        public string? AboutHtml { get; set; }
         public string? AboutImageUrl { get; set; }
 
-        // OPTIONAL HIGHLIGHTS / CARDS
+        // Highlight boxes
         public string? Highlight1Title { get; set; }
         public string? Highlight1Text { get; set; }
         public string? Highlight1Icon { get; set; }
@@ -34,5 +32,10 @@ namespace SchoolWebInternalAPI.Domain.Entities.Pages
         public string? SeoTitle { get; set; }
         public string? SeoDescription { get; set; }
         public string? OgImageUrl { get; set; }
+
+        // Metadata
+        public DateTime LastUpdatedAt { get; set; }
+        public string? LastUpdatedBy { get; set; }
+        public bool IsPublished { get; set; }
     }
 }
