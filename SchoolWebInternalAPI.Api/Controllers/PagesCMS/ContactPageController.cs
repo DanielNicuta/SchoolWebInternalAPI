@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/contact")]
+    [Route("api/page/contact")]
     public class ContactPageController : ControllerBase
     {
         private readonly IContactPageService _service;

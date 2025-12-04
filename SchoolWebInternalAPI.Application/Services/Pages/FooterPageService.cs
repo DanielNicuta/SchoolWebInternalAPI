@@ -2,16 +2,16 @@ using AutoMapper;
 using SchoolWebInternalAPI.Application.Common.Models;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
-using SchoolWebInternalAPI.Domain.Entities.Pages;
+using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 
 namespace SchoolWebInternalAPI.Application.Services.Pages
 {
     public class FooterContentService : IFooterContentService
     {
-        private readonly IFooterPageRepository _repository;
+        private readonly IFooterContentRepository _repository;
         private readonly IMapper _mapper;
 
-        public FooterContentService(IFooterPageRepository repository, IMapper mapper)
+        public FooterContentService(IFooterContentRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -33,7 +33,7 @@ namespace SchoolWebInternalAPI.Application.Services.Pages
             string? updatedBy = null,
             CancellationToken cancellationToken = default)
         {
-            var entity = _mapper.Map<FooterPage>(dto);
+            var entity = _mapper.Map<FooterContent>(dto);
             entity.UpdatedAt = DateTime.UtcNow;
 
             var saved = await _repository.UpsertAsync(entity, cancellationToken);

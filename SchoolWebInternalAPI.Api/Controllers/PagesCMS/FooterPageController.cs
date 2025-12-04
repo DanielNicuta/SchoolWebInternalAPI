@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/footer")]
+    [Route("api/page/footer")]
     public class FooterContentController : ControllerBase
     {
         private readonly IFooterContentService _service;

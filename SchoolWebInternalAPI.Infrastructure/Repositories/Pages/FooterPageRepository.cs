@@ -1,33 +1,34 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
 using SchoolWebInternalAPI.Domain.Entities.Pages;
+using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 using SchoolWebInternalAPI.Infrastructure.Data;
 
 namespace SchoolWebInternalAPI.Infrastructure.Repositories.Pages
 {
-    public class FooterPageRepository : IFooterPageRepository
+    public class FooterContentRepository : IFooterContentRepository
     {
         private readonly SchoolDbContext _context;
 
-        public FooterPageRepository(SchoolDbContext context)
+        public FooterContentRepository(SchoolDbContext context)
         {
             _context = context;
         }
 
-        public async Task<FooterPage?> GetAsync(CancellationToken cancellationToken = default)
+        public async Task<FooterContent?> GetAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.FooterPage
+            return await _context.FooterContents
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<FooterPage> UpsertAsync(FooterPage entity, CancellationToken cancellationToken = default)
+        public async Task<FooterContent> UpsertAsync(FooterContent entity, CancellationToken cancellationToken = default)
         {
-            var existing = await _context.FooterPage.FirstOrDefaultAsync(cancellationToken);
+            var existing = await _context.FooterContents.FirstOrDefaultAsync(cancellationToken);
 
             if (existing == null)
             {
-                _context.FooterPage.Add(entity);
+                _context.FooterContents.Add(entity);
             }
             else
             {

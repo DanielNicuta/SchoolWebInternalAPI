@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/links")]
+    [Route("api/page/links")]
     public class LinksPageController : ControllerBase
     {
         private readonly ILinksPageService _service;

@@ -12,7 +12,6 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<HomePage> HomePages { get; set; } = null!;
         public DbSet<ContactPage> ContactPages { get; set; } = null!;
-        public DbSet<FooterPage> FooterPage { get; set; } = null!;
         public DbSet<HistoryPage> HistoryPages { get; set; } = null!;
         public DbSet<LinksPage> LinksPages { get; set; } = null!;
         public DbSet<MissionPage> MissionPages { get; set; } = null!;

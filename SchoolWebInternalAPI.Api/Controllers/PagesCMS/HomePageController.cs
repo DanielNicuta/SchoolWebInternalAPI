@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/home")]
+    [Route("api/page/home")]
     public class HomePageController : ControllerBase
     {
         private readonly IHomePageService _homePageService;

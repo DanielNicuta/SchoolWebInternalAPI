@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/settings")]
+    [Route("api/page/settings")]
     public class SiteSettingsController : ControllerBase
     {
         private readonly ISiteSettingsService _service;

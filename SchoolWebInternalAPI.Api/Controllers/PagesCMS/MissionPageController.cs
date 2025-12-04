@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/mission")]
+    [Route("api/page/mission")]
     public class MissionPageController : ControllerBase
     {
         private readonly IMissionPageService _service;

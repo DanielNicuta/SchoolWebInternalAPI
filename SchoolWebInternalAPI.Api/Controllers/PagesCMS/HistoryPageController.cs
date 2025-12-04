@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/history")]
+    [Route("api/page/history")]
     public class HistoryPageController : ControllerBase
     {
         private readonly IHistoryPageService _service;

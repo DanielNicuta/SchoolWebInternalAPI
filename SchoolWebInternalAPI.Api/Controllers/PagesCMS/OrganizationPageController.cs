@@ -5,7 +5,7 @@ using SchoolWebInternalAPI.Application.Interfaces.Pages;
 namespace SchoolWebInternalAPI.Api.Controllers.Cms
 {
     [ApiController]
-    [Route("api/cms/organization")]
+    [Route("api/page/organization")]
     public class OrganizationPageController : ControllerBase
     {
         private readonly IOrganizationPageService _service;
