@@ -65,6 +65,8 @@ namespace SchoolWebInternalAPI.Application.Mapping
             CreateMap<FooterPage, FooterContentResponseDto>();
             CreateMap<FooterContentUpdateDto, FooterPage>();
 
+            CreateMap<HistoryPage, HistoryPageUpdateDto>().ReverseMap();
+
         }
     }
 }

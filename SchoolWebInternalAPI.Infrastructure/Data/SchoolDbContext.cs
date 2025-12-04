@@ -13,6 +13,7 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<HomePage> HomePages { get; set; } = null!;
         public DbSet<ContactPage> ContactPages { get; set; } = null!;
         public DbSet<FooterPage> FooterPage { get; set; } = null!;
+        public DbSet<HistoryPage> HistoryPages { get; set; } = null!;
 
 
         // inside SchoolDbContext (or your DbContext implementation)
