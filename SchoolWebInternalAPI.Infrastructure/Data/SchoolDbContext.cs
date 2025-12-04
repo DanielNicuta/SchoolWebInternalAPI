@@ -16,6 +16,7 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<HistoryPage> HistoryPages { get; set; } = null!;
         public DbSet<LinksPage> LinksPages { get; set; } = null!;
         public DbSet<MissionPage> MissionPages { get; set; } = null!;
+        public DbSet<OrganizationPage> OrganizationPages { get; set; } = null!;
 
 
 

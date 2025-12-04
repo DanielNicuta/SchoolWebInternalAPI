@@ -28,7 +28,8 @@ namespace SchoolWebInternalAPI.Infrastructure
             services.AddScoped<IHistoryPageRepository, HistoryPageRepository>();
             services.AddScoped<ILinksPageRepository, LinksPageRepository>();
             services.AddScoped<IMissionPageRepository, MissionPageRepository>();
-
+            services.AddScoped<IOrganizationPageRepository, OrganizationPageRepository>();
+            
 
             return services;
         }
