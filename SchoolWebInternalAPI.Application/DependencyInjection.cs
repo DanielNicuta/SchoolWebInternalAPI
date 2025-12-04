@@ -16,6 +16,7 @@ namespace SchoolWebInternalAPI.Application
             services.AddScoped<ILinksPageService, LinksPageService>();
             services.AddScoped<IMissionPageService, MissionPageService>();
             services.AddScoped<IOrganizationPageService, OrganizationPageService>();
+            services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 
 
             return services;

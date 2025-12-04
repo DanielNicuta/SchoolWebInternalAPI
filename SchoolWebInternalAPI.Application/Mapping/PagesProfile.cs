@@ -73,6 +73,9 @@ namespace SchoolWebInternalAPI.Application.Mapping
 
             CreateMap<OrganizationPage, OrganizationPageUpdateDto>().ReverseMap();
 
+            CreateMap<SiteSettings, SiteSettingsUpdateDto>().ReverseMap();
+
+
         }
     }
 }
