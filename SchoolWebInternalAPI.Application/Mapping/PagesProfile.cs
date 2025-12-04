@@ -67,6 +67,8 @@ namespace SchoolWebInternalAPI.Application.Mapping
 
             CreateMap<HistoryPage, HistoryPageUpdateDto>().ReverseMap();
 
+            CreateMap<LinksPage, LinksPageUpdateDto>().ReverseMap();
+
         }
     }
 }

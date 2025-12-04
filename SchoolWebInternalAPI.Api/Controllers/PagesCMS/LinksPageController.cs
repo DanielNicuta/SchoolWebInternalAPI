@@ -1,0 +1,34 @@
+using Microsoft.AspNetCore.Mvc;
+using SchoolWebInternalAPI.Application.DTOs.Pages.Links;
+using SchoolWebInternalAPI.Application.Interfaces.Pages;
+
+namespace SchoolWebInternalAPI.Api.Controllers.Cms
+{
+    [ApiController]
+    [Route("api/cms/links")]
+    public class LinksPageController : ControllerBase
+    {
+        private readonly ILinksPageService _service;
+
+        public LinksPageController(ILinksPageService service)
+        {
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        {
+            var result = await _service.GetAsync(cancellationToken);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(
+            LinksPageUpdateDto dto,
+            CancellationToken cancellationToken)
+        {
+            var result = await _service.UpdateAsync(dto, "System", cancellationToken);
+            return StatusCode(result.StatusCode, result);
+        }
+    }
+}
