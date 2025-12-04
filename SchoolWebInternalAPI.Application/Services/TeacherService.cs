@@ -1,4 +1,5 @@
 using AutoMapper;
+using SchoolWebInternalAPI.Application.Common.Models;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Domain.Entities;
@@ -16,43 +17,106 @@ namespace SchoolWebInternalAPI.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<List<TeacherResponseDto>> GetAllTeachersAsync()
+        // --------------------------------------------------------------
+        // GET ALL
+        // --------------------------------------------------------------
+        public async Task<ApiResponse<List<TeacherResponseDto>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var teachers = await _teacherRepository.GetAllAsync();
-            return _mapper.Map<List<TeacherResponseDto>>(teachers);
+            var teachers = await _teacherRepository.GetAllAsync(cancellationToken);
+
+            var dtos = _mapper.Map<List<TeacherResponseDto>>(teachers);
+
+            return ApiResponse<List<TeacherResponseDto>>
+                .SuccessResponse(dtos);
         }
 
-        public async Task<TeacherResponseDto?> GetTeacherByIdAsync(int id)
+        // --------------------------------------------------------------
+        // GET BY ID
+        // --------------------------------------------------------------
+        public async Task<ApiResponse<TeacherResponseDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var teacher = await _teacherRepository.GetByIdAsync(id);
-            return teacher == null ? null : _mapper.Map<TeacherResponseDto>(teacher);
-        }
+            var teacher = await _teacherRepository.GetByIdAsync(id, cancellationToken);
 
-        public async Task<TeacherResponseDto> CreateTeacherAsync(TeacherCreateDto dto)
-        {
-            var teacher = _mapper.Map<Teacher>(dto);
-
-            var created = await _teacherRepository.AddAsync(teacher);
-
-            return _mapper.Map<TeacherResponseDto>(created);
-        }
-
-        public async Task<bool> UpdateTeacherAsync(TeacherUpdateDto dto)
-        {
-            var existing = await _teacherRepository.GetByIdAsync(dto.Id);
-            if (existing == null)
+            if (teacher == null)
             {
-                return false;
+                return ApiResponse<TeacherResponseDto>
+                    .NotFound($"Teacher with id {id} was not found.");
             }
 
-            _mapper.Map(dto, existing);
+            var dto = _mapper.Map<TeacherResponseDto>(teacher);
 
-            return await _teacherRepository.UpdateAsync(existing);
+            return ApiResponse<TeacherResponseDto>
+                .SuccessResponse(dto);
         }
 
-        public async Task<bool> DeleteTeacherAsync(int id)
+        // --------------------------------------------------------------
+        // CREATE
+        // --------------------------------------------------------------
+        public async Task<ApiResponse<TeacherResponseDto>> CreateAsync(
+            TeacherCreateDto dto,
+            CancellationToken cancellationToken = default)
         {
-            return await _teacherRepository.DeleteAsync(id);
+            var entity = _mapper.Map<Teacher>(dto);
+
+            entity.CreatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
+
+            var created = await _teacherRepository.AddAsync(entity, cancellationToken);
+
+            var responseDto = _mapper.Map<TeacherResponseDto>(created);
+
+            return ApiResponse<TeacherResponseDto>
+                .SuccessResponse(responseDto, "Teacher created successfully.");
+        }
+
+        // --------------------------------------------------------------
+        // UPDATE
+        // --------------------------------------------------------------
+        public async Task<ApiResponse<TeacherResponseDto>> UpdateAsync(
+            TeacherUpdateDto dto,
+            CancellationToken cancellationToken = default)
+        {
+            var existing = await _teacherRepository.GetByIdAsync(dto.Id, cancellationToken);
+
+            if (existing == null)
+            {
+                return ApiResponse<TeacherResponseDto>
+                    .NotFound($"Teacher with id {dto.Id} was not found.");
+            }
+
+            // Update fields
+            _mapper.Map(dto, existing);
+
+            existing.UpdatedAt = DateTime.UtcNow;
+
+            var updated = await _teacherRepository.UpdateAsync(existing, cancellationToken);
+            if (updated == null)
+            {
+                return ApiResponse<TeacherResponseDto>
+                    .Fail("Failed to update teacher.", 500);
+            }
+
+            var responseDto = _mapper.Map<TeacherResponseDto>(updated);
+
+            return ApiResponse<TeacherResponseDto>
+                .SuccessResponse(responseDto, "Teacher updated successfully.");
+        }
+
+        // --------------------------------------------------------------
+        // DELETE
+        // --------------------------------------------------------------
+        public async Task<ApiResponse<bool>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var success = await _teacherRepository.DeleteAsync(id, cancellationToken);
+
+            if (!success)
+            {
+                return ApiResponse<bool>
+                    .NotFound($"Teacher with id {id} was not found.");
+            }
+
+            return ApiResponse<bool>
+                .SuccessResponse(true, "Teacher deleted successfully.");
         }
     }
 }

@@ -30,6 +30,8 @@ namespace SchoolWebInternalAPI.Infrastructure
             services.AddScoped<IMissionPageRepository, MissionPageRepository>();
             services.AddScoped<IOrganizationPageRepository, OrganizationPageRepository>();
             services.AddScoped<ISiteSettingsRepository, SiteSettingsRepository>();
+            services.AddScoped<ITeacherRepository, TeacherRepository>();
+
 
 
             return services;

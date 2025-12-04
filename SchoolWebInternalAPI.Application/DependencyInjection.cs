@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
+using SchoolWebInternalAPI.Application.Services;
 using SchoolWebInternalAPI.Application.Services.Pages;
 
 namespace SchoolWebInternalAPI.Application
@@ -17,6 +19,7 @@ namespace SchoolWebInternalAPI.Application
             services.AddScoped<IMissionPageService, MissionPageService>();
             services.AddScoped<IOrganizationPageService, OrganizationPageService>();
             services.AddScoped<ISiteSettingsService, SiteSettingsService>();
+            services.AddScoped<ITeacherService, TeacherService>();
 
 
             return services;
