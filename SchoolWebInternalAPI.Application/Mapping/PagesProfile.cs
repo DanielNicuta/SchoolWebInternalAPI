@@ -61,6 +61,10 @@ namespace SchoolWebInternalAPI.Application.Mapping
             CreateMap<ContactPage, ContactPageResponseDto>();
             CreateMap<ContactPageUpdateDto, ContactPage>();
 
+            // FOOTER
+            CreateMap<FooterPage, FooterContentResponseDto>();
+            CreateMap<FooterContentUpdateDto, FooterPage>();
+
         }
     }
 }

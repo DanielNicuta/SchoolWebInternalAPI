@@ -12,6 +12,8 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<HomePage> HomePages { get; set; } = null!;
         public DbSet<ContactPage> ContactPages { get; set; } = null!;
+        public DbSet<FooterPage> FooterPage { get; set; } = null!;
+
 
         // inside SchoolDbContext (or your DbContext implementation)
         public DbSet<HomePageContent> HomePageContents { get; set; }
