@@ -8,7 +8,7 @@ using SchoolWebInternalAPI.Infrastructure.Data;
 using SchoolWebInternalAPI.Infrastructure.Repositories;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.API.Middlewares;
-using SchoolWebInternalAPI.Application.Mappings;
+using SchoolWebInternalAPI.Application.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +41,7 @@ builder.Services.AddSwaggerGen();
 // AutoMapper
 // ------------------------------------------------------
 builder.Services.AddAutoMapper(typeof(TeacherProfile));
+builder.Services.AddAutoMapper(typeof(PagesProfile));
 
 // ------------------------------------------------------
 // FluentValidation

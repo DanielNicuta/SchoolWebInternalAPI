@@ -2,7 +2,7 @@ using AutoMapper;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Domain.Entities;
 
-namespace SchoolWebInternalAPI.Application.Mappings;
+namespace SchoolWebInternalAPI.Application.Mapping;
 
 public class TeacherProfile : Profile
 {
