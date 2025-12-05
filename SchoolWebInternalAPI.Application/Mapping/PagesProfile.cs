@@ -20,49 +20,92 @@ namespace SchoolWebInternalAPI.Application.Mapping
             // HOME
             // -----------------------------------------
             CreateMap<HomePage, HomePageResponseDto>();
-            CreateMap<HomePageUpdateDto, HomePage>();
+
+            CreateMap<HomePageUpdateDto, HomePage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore())
+                .ForMember(d => d.IsPublished, opt => opt.Ignore())
+                .ForMember(d => d.LastUpdatedAt, opt => opt.Ignore())
+                .ForMember(d => d.LastUpdatedBy, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // HISTORY
             // -----------------------------------------
             CreateMap<HistoryPage, HistoryPageResponseDto>();
-            CreateMap<HistoryPageUpdateDto, HistoryPage>();
+
+            CreateMap<HistoryPageUpdateDto, HistoryPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // MISSION
             // -----------------------------------------
             CreateMap<MissionPage, MissionPageResponseDto>();
-            CreateMap<MissionPageUpdateDto, MissionPage>();
+
+            CreateMap<MissionPageUpdateDto, MissionPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // ORGANIZATION
             // -----------------------------------------
             CreateMap<OrganizationPage, OrganizationPageResponseDto>();
-            CreateMap<OrganizationPageUpdateDto, OrganizationPage>();
+
+            CreateMap<OrganizationPageUpdateDto, OrganizationPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // LINKS PAGE
             // -----------------------------------------
             CreateMap<LinksPage, LinksPageResponseDto>();
-            CreateMap<LinksPageUpdateDto, LinksPage>();
+
+            CreateMap<LinksPageUpdateDto, LinksPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // CONTACT PAGE
             // -----------------------------------------
             CreateMap<ContactPage, ContactPageResponseDto>();
-            CreateMap<ContactPageUpdateDto, ContactPage>();
+
+            CreateMap<ContactPageUpdateDto, ContactPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedBy, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // SITE SETTINGS
             // -----------------------------------------
             CreateMap<SiteSettings, SiteSettingsResponseDto>();
-            CreateMap<SiteSettingsUpdateDto, SiteSettings>();
+
+            CreateMap<SiteSettingsUpdateDto, SiteSettings>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
 
             // -----------------------------------------
             // FOOTER
             // -----------------------------------------
             CreateMap<FooterContent, FooterContentResponseDto>();
-            CreateMap<FooterContentUpdateDto, FooterContent>();
+
+            CreateMap<FooterContentUpdateDto, FooterContent>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
         }
     }
 }
