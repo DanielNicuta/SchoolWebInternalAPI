@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Domain.Entities;
 using SchoolWebInternalAPI.Domain.Entities.Pages;
@@ -5,10 +7,14 @@ using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 
 namespace SchoolWebInternalAPI.Infrastructure.Data
 {
-    public class SchoolDbContext : DbContext
+    public class SchoolDbContext : IdentityDbContext<IdentityUser>
     {
-        public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options) { }
+        public SchoolDbContext(DbContextOptions<SchoolDbContext> options)
+            : base(options) { }
 
+        // -------------------------
+        // CMS + Teachers DbSets
+        // -------------------------
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<HomePage> HomePages { get; set; } = null!;
         public DbSet<ContactPage> ContactPages { get; set; } = null!;
@@ -16,31 +22,15 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<LinksPage> LinksPages { get; set; } = null!;
         public DbSet<MissionPage> MissionPages { get; set; } = null!;
         public DbSet<OrganizationPage> OrganizationPages { get; set; } = null!;
+        public DbSet<SiteSettings> SiteSettings { get; set; } = null!;
+        public DbSet<FooterContent> FooterContents { get; set; } = null!;
 
-
-
-        // inside SchoolDbContext (or your DbContext implementation)
-        public DbSet<HomePageContent> HomePageContents { get; set; }
-        public DbSet<HistoryPageContent> HistoryPageContents { get; set; }
-        public DbSet<MissionPageContent> MissionPageContents { get; set; }
-        public DbSet<OrganizationPageContent> OrganizationPageContents { get; set; }
-        public DbSet<TeachersPageContent> TeachersPageContents { get; set; }
-        public DbSet<LinksPageContent> LinksPageContents { get; set; }
-        public DbSet<ContactPageContent> ContactPageContents { get; set; }
-        public DbSet<SiteSettings> SiteSettings { get; set; }
-        public DbSet<FooterContent> FooterContents { get; set; }
-
-
-
-        // Add more DbSets here (Announcements, Pages, Documents, Gallery...)
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
-            // Fluent API configurations go here if needed
+            base.OnModelCreating(builder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchoolDbContext).Assembly);
-
+            // Apply your custom configurations (if any)
+            builder.ApplyConfigurationsFromAssembly(typeof(SchoolDbContext).Assembly);
         }
     }
 }

@@ -1,6 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using SchoolWebInternalAPI.API.Middlewares;
 using SchoolWebInternalAPI.Application;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Contact;
@@ -33,7 +33,24 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // --------------------------------------------
-// AutoMapper → one clean registration
+// Identity
+// --------------------------------------------
+builder.Services.AddIdentityCore<IdentityUser>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 6;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<SchoolWebInternalAPI.Infrastructure.Data.SchoolDbContext>()
+.AddDefaultTokenProviders();
+
+// Authentication + Authorization
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
+// --------------------------------------------
+// AutoMapper
 // --------------------------------------------
 builder.Services.AddAutoMapper(typeof(TeacherProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(PagesProfile).Assembly);
@@ -77,6 +94,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();  // <-- REQUIRED
+app.UseAuthorization();
 
 app.MapControllers();
 
