@@ -1,10 +1,16 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Application.Interfaces;
-using SchoolWebInternalAPI.Infrastructure.Data;
-using SchoolWebInternalAPI.Infrastructure.Repositories;
+using SchoolWebInternalAPI.Application.Interfaces.Auth;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
+using SchoolWebInternalAPI.Application.Services;
+using SchoolWebInternalAPI.Application.Services.Pages;
+using SchoolWebInternalAPI.Domain.Entities;
+using SchoolWebInternalAPI.Infrastructure.Data;
+using SchoolWebInternalAPI.Infrastructure.Identity;
+using SchoolWebInternalAPI.Infrastructure.Repositories;
 using SchoolWebInternalAPI.Infrastructure.Repositories.Pages;
 
 namespace SchoolWebInternalAPI.Infrastructure
@@ -15,13 +21,32 @@ namespace SchoolWebInternalAPI.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                                   ?? "Data Source=school.db";
-
+            // -------------------------------
+            // DbContext
+            // -------------------------------
             services.AddDbContext<SchoolDbContext>(options =>
-                options.UseSqlite(connectionString));
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
 
+            // -------------------------------
+            // Identity
+            // -------------------------------
+            services
+                .AddIdentityCore<IdentityUser>(options =>
+                {
+                    // You can tweak password rules later if you want
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireUppercase = false;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<SchoolDbContext>();
+
+            // -------------------------------
+            // Repositories
+            // -------------------------------
             services.AddScoped<ITeacherRepository, TeacherRepository>();
+
             services.AddScoped<IHomePageRepository, HomePageRepository>();
             services.AddScoped<IContactPageRepository, ContactPageRepository>();
             services.AddScoped<IFooterContentRepository, FooterContentRepository>();
@@ -30,8 +55,23 @@ namespace SchoolWebInternalAPI.Infrastructure
             services.AddScoped<IMissionPageRepository, MissionPageRepository>();
             services.AddScoped<IOrganizationPageRepository, OrganizationPageRepository>();
             services.AddScoped<ISiteSettingsRepository, SiteSettingsRepository>();
-            services.AddScoped<ITeacherRepository, TeacherRepository>();
 
+            // -------------------------------
+            // Application services
+            // -------------------------------
+            services.AddScoped<ITeacherService, TeacherService>();
+
+            services.AddScoped<IHomePageService, HomePageService>();
+            services.AddScoped<IContactPageService, ContactPageService>();
+            services.AddScoped<IFooterContentService, FooterContentService>();
+            services.AddScoped<IHistoryPageService, HistoryPageService>();
+            services.AddScoped<ILinksPageService, LinksPageService>();
+            services.AddScoped<IMissionPageService, MissionPageService>();
+            services.AddScoped<IOrganizationPageService, OrganizationPageService>();
+            services.AddScoped<ISiteSettingsService, SiteSettingsService>();
+
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddIdentity<ApplicationUser, IdentityRole>();
 
 
             return services;

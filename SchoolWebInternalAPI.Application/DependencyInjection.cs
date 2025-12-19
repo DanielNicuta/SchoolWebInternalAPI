@@ -21,7 +21,7 @@ namespace SchoolWebInternalAPI.Application
             services.AddScoped<ISiteSettingsService, SiteSettingsService>();
             services.AddScoped<ITeacherService, TeacherService>();
 
-
+            
             return services;
         }
     }

@@ -7,14 +7,10 @@ using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 
 namespace SchoolWebInternalAPI.Infrastructure.Data
 {
-    public class SchoolDbContext : IdentityDbContext<IdentityUser>
+    public class SchoolDbContext : IdentityDbContext<ApplicationUser>
     {
-        public SchoolDbContext(DbContextOptions<SchoolDbContext> options)
-            : base(options) { }
+        public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options) { }
 
-        // -------------------------
-        // CMS + Teachers DbSets
-        // -------------------------
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<HomePage> HomePages { get; set; } = null!;
         public DbSet<ContactPage> ContactPages { get; set; } = null!;
@@ -25,12 +21,13 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<SiteSettings> SiteSettings { get; set; } = null!;
         public DbSet<FooterContent> FooterContents { get; set; } = null!;
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            // This will configure Identity tables
+            base.OnModelCreating(modelBuilder);
 
-            // Apply your custom configurations (if any)
-            builder.ApplyConfigurationsFromAssembly(typeof(SchoolDbContext).Assembly);
+            // Your entities’ configurations
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchoolDbContext).Assembly);
         }
     }
 }

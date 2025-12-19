@@ -23,6 +23,7 @@ using SchoolWebInternalAPI.Application.Validators.Pages.Organization;
 using SchoolWebInternalAPI.Application.Validators.Pages.Settings;
 using SchoolWebInternalAPI.Application.Validators.Teachers;
 using SchoolWebInternalAPI.Infrastructure;
+using SchoolWebInternalAPI.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,5 +100,11 @@ app.UseAuthentication();  // <-- REQUIRED
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    await AdminSeeder.SeedAsync(scope.ServiceProvider);
+}
+
 
 app.Run();
