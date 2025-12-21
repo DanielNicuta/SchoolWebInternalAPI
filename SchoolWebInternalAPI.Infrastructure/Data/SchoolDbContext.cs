@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Domain.Entities;
@@ -23,10 +22,8 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // This will configure Identity tables
             base.OnModelCreating(modelBuilder);
 
-            // Your entities’ configurations
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchoolDbContext).Assembly);
         }
     }

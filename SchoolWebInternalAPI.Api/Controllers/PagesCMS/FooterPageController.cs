@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
@@ -16,6 +17,7 @@ namespace SchoolWebInternalAPI.Api.Controllers.Cms
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
             var result = await _service.GetAsync(cancellationToken);
@@ -23,6 +25,7 @@ namespace SchoolWebInternalAPI.Api.Controllers.Cms
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(
             FooterContentUpdateDto dto,
             CancellationToken cancellationToken)

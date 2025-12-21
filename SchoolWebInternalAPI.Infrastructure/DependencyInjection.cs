@@ -1,7 +1,10 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using SchoolWebInternalAPI.Application.Interfaces;
 using SchoolWebInternalAPI.Application.Interfaces.Auth;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
@@ -21,26 +24,27 @@ namespace SchoolWebInternalAPI.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            // -------------------------------
+            // -----------------------
             // DbContext
-            // -------------------------------
+            // -----------------------
             services.AddDbContext<SchoolDbContext>(options =>
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
 
-            // -------------------------------
-            // Identity
-            // -------------------------------
-            services
-                .AddIdentityCore<IdentityUser>(options =>
-                {
-                    // You can tweak password rules later if you want
-                    options.Password.RequiredLength = 6;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireUppercase = false;
-                })
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<SchoolDbContext>();
+            // -----------------------
+            // Identity (registers IUserStore<ApplicationUser>)
+            // -----------------------
+            services.AddIdentityCore<ApplicationUser>(options =>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<SchoolDbContext>()   // ✅ THIS FIXES IUserStore error
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
 
             // -------------------------------
             // Repositories

@@ -21,10 +21,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
 
-    <!-- Config + DI -->
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <!-- Config -->
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
   </ItemGroup>

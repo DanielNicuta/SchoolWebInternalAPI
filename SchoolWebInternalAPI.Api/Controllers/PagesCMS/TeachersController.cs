@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Application.Interfaces;
@@ -17,6 +18,7 @@ namespace SchoolWebInternalAPI.Api.Controllers
 
         // GET: api/teachers
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var result = await _teacherService.GetAllAsync(cancellationToken);
@@ -25,6 +27,7 @@ namespace SchoolWebInternalAPI.Api.Controllers
 
         // GET: api/teachers/{id}
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
             var result = await _teacherService.GetByIdAsync(id, cancellationToken);
@@ -33,6 +36,7 @@ namespace SchoolWebInternalAPI.Api.Controllers
 
         // POST: api/teachers
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] TeacherCreateDto dto, CancellationToken cancellationToken)
         {
             var result = await _teacherService.CreateAsync(dto, cancellationToken);
@@ -41,6 +45,7 @@ namespace SchoolWebInternalAPI.Api.Controllers
 
         // PUT: api/teachers/{id}
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] TeacherUpdateDto dto, CancellationToken cancellationToken)
         {
             if (id != dto.Id)
@@ -54,6 +59,7 @@ namespace SchoolWebInternalAPI.Api.Controllers
 
         // DELETE: api/teachers/{id}
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
             var result = await _teacherService.DeleteAsync(id, cancellationToken);

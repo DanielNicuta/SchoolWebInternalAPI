@@ -53,6 +53,9 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new Claim("fullName", user.FullName ?? "")
             };
+            if (string.IsNullOrWhiteSpace(_jwt.Key))
+                throw new InvalidOperationException("JWT Key is not configured. Check Jwt:Key in appsettings.json.");
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
