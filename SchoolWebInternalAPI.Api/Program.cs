@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SchoolWebInternalAPI.API.Middlewares;
 using SchoolWebInternalAPI.Application;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Contact;
@@ -94,7 +96,8 @@ builder.Services
             ValidIssuer = jwtSection["Issuer"],
             ValidAudience = jwtSection["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-            ClockSkew = TimeSpan.FromSeconds(30)
+            ClockSkew = TimeSpan.FromSeconds(30),
+            RoleClaimType = ClaimTypes.Role
         };
     });
 
@@ -129,7 +132,42 @@ builder.Services.AddScoped<IValidator<SiteSettingsUpdateDto>, SiteSettingsUpdate
 // --------------------------------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SchoolWebInternalAPI",
+        Version = "v1",
+        Description = "Internal API for SchoolWebsite CMS + Admin features"
+    });
+
+    // Add JWT Bearer auth to Swagger UI
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Paste ONLY the token here (without 'Bearer ')."
+    });
+
+    // Apply Bearer globally (so endpoints show the lock icon automatically)
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
