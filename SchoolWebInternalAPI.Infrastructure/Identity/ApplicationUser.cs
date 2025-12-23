@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace SchoolWebInternalAPI.Domain.Entities
+namespace SchoolWebInternalAPI.Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser
     {
