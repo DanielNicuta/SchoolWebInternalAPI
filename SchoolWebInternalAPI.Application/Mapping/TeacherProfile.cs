@@ -2,17 +2,18 @@ using AutoMapper;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Domain.Entities;
 
-namespace SchoolWebInternalAPI.Application.Mapping;
-
-public class TeacherProfile : Profile
+namespace SchoolWebInternalAPI.Application.Mapping
 {
-    public TeacherProfile()
+    public class TeacherProfile : Profile
     {
-        // Domain → DTO
-        CreateMap<Teacher, TeacherResponseDto>();
+        public TeacherProfile()
+        {
+            CreateMap<Teacher, TeacherResponseDto>();
 
-        // DTO → Domain
-        CreateMap<TeacherCreateDto, Teacher>();
-        CreateMap<TeacherUpdateDto, Teacher>();
+            CreateMap<TeacherCreateDto, Teacher>();
+
+            CreateMap<TeacherUpdateDto, Teacher>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore()); // we set Id from existing entity
+        }
     }
 }

@@ -4,11 +4,11 @@ using SchoolWebInternalAPI.Application.DTOs.Pages.Home;
 using SchoolWebInternalAPI.Application.DTOs.Pages.History;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Mission;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Organization;
-using SchoolWebInternalAPI.Application.DTOs.Pages.TeachersPage;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Links;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Contact;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Settings;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
+using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 
 namespace SchoolWebInternalAPI.Application.Mapping
 {
@@ -16,41 +16,96 @@ namespace SchoolWebInternalAPI.Application.Mapping
     {
         public PagesProfile()
         {
+            // -----------------------------------------
             // HOME
-            CreateMap<HomePageContent, HomePageResponseDto>();
-            CreateMap<HomePageUpdateDto, HomePageContent>();
+            // -----------------------------------------
+            CreateMap<HomePage, HomePageResponseDto>();
 
+            CreateMap<HomePageUpdateDto, HomePage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore())
+                .ForMember(d => d.IsPublished, opt => opt.Ignore())
+                .ForMember(d => d.LastUpdatedAt, opt => opt.Ignore())
+                .ForMember(d => d.LastUpdatedBy, opt => opt.Ignore());
+
+
+            // -----------------------------------------
             // HISTORY
-            CreateMap<HistoryPageContent, HistoryPageResponseDto>();
-            CreateMap<HistoryPageUpdateDto, HistoryPageContent>();
+            // -----------------------------------------
+            CreateMap<HistoryPage, HistoryPageResponseDto>();
 
+            CreateMap<HistoryPageUpdateDto, HistoryPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
+
+            // -----------------------------------------
             // MISSION
-            CreateMap<MissionPageContent, MissionPageResponseDto>();
-            CreateMap<MissionPageUpdateDto, MissionPageContent>();
+            // -----------------------------------------
+            CreateMap<MissionPage, MissionPageResponseDto>();
 
+            CreateMap<MissionPageUpdateDto, MissionPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
+
+            // -----------------------------------------
             // ORGANIZATION
-            CreateMap<OrganizationPageContent, OrganizationPageResponseDto>();
-            CreateMap<OrganizationPageUpdateDto, OrganizationPageContent>();
+            // -----------------------------------------
+            CreateMap<OrganizationPage, OrganizationPageResponseDto>();
 
-            // TEACHERS PAGE (NOT teachers)
-            CreateMap<TeachersPageContent, TeachersPageResponseDto>();
-            CreateMap<TeachersPageUpdateDto, TeachersPageContent>();
+            CreateMap<OrganizationPageUpdateDto, OrganizationPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
 
+
+            // -----------------------------------------
             // LINKS PAGE
-            CreateMap<LinksPageContent, LinksPageResponseDto>();
-            CreateMap<LinksPageUpdateDto, LinksPageContent>();
+            // -----------------------------------------
+            CreateMap<LinksPage, LinksPageResponseDto>();
 
+            CreateMap<LinksPageUpdateDto, LinksPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
+
+            // -----------------------------------------
             // CONTACT PAGE
-            CreateMap<ContactPageContent, ContactPageResponseDto>();
-            CreateMap<ContactPageUpdateDto, ContactPageContent>();
+            // -----------------------------------------
+            CreateMap<ContactPage, ContactPageResponseDto>();
 
+            CreateMap<ContactPageUpdateDto, ContactPage>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedBy, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
+
+            // -----------------------------------------
             // SITE SETTINGS
+            // -----------------------------------------
             CreateMap<SiteSettings, SiteSettingsResponseDto>();
-            CreateMap<SiteSettingsUpdateDto, SiteSettings>();
 
+            CreateMap<SiteSettingsUpdateDto, SiteSettings>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
+
+
+            // -----------------------------------------
             // FOOTER
+            // -----------------------------------------
             CreateMap<FooterContent, FooterContentResponseDto>();
-            CreateMap<FooterContentUpdateDto, FooterContent>();
+
+            CreateMap<FooterContentUpdateDto, FooterContent>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreatedAt, opt => opt.Ignore())
+                .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
         }
     }
 }
