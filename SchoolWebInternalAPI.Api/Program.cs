@@ -115,7 +115,6 @@ builder.Services.AddScoped<IValidator<SiteSettingsUpdateDto>, SiteSettingsUpdate
 
 builder.Services.AddScoped<IValidator<LoginDto>, LoginRequestDtoValidator>();
 builder.Services.AddScoped<IValidator<RegisterDto>, RegisterRequestDtoValidator>();
-builder.Services.AddScoped<IValidator<AuthResponseDto>, RefreshRequestDtoValidator>();
 builder.Services.AddScoped<IValidator<RevokeRequestDto>, RevokeRequestDtoValidator>();
 builder.Services.AddScoped<IValidator<LogoutRequestDto>, LogoutRequestDtoValidator>();
 
