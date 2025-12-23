@@ -4,8 +4,10 @@ using System.Threading.RateLimiting;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolWebInternalAPI.API.Middlewares;
@@ -38,21 +40,31 @@ using SchoolWebInternalAPI.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --------------------------------------------
-// DB Context (make sure AddInfrastructure does NOT also add this again)
-// --------------------------------------------
+// ------------------------------------------------------------
+// DbContext (IMPORTANT: ensure AddInfrastructure does NOT add it again)
+// ------------------------------------------------------------
 builder.Services.AddDbContext<SchoolDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// --------------------------------------------
-// Application + Infrastructure registration
-// --------------------------------------------
+// ------------------------------------------------------------
+// Application + Infrastructure
+// ------------------------------------------------------------
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// --------------------------------------------
-// Identity (use ApplicationUser, NOT IdentityUser)
-// --------------------------------------------
+// ------------------------------------------------------------
+// Health checks (App + DB)
+// Requires: Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
+// ------------------------------------------------------------
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<SchoolDbContext>(
+        name: "school",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "ready" });
+
+// ------------------------------------------------------------
+// Identity (use ApplicationUser)
+// ------------------------------------------------------------
 builder.Services
     .AddIdentityCore<ApplicationUser>(options =>
     {
@@ -61,9 +73,10 @@ builder.Services
         options.Password.RequireLowercase = false;
         options.Password.RequireDigit = false;
         options.Password.RequiredLength = 6;
+
         options.User.RequireUniqueEmail = true;
 
-        // Lockout policy (brute force protection)
+        // Lockout policy
         options.Lockout.AllowedForNewUsers = true;
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
@@ -73,9 +86,9 @@ builder.Services
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-// --------------------------------------------
-// JWT Settings bind
-// --------------------------------------------
+// ------------------------------------------------------------
+// JWT Settings + Auth
+// ------------------------------------------------------------
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -84,9 +97,6 @@ var jwtKey = jwtSection["Key"];
 if (string.IsNullOrWhiteSpace(jwtKey))
     throw new InvalidOperationException("JWT Key missing. Add Jwt:Key to appsettings.json");
 
-// --------------------------------------------
-// Authentication (ONLY ONCE!)
-// --------------------------------------------
 builder.Services
     .AddAuthentication(options =>
     {
@@ -111,15 +121,15 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// --------------------------------------------
-// AutoMapper (one registration is enough, but this is OK)
-// --------------------------------------------
+// ------------------------------------------------------------
+// AutoMapper
+// ------------------------------------------------------------
 builder.Services.AddAutoMapper(typeof(TeacherProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(PagesProfile).Assembly);
 
-// --------------------------------------------
+// ------------------------------------------------------------
 // FluentValidation
-// --------------------------------------------
+// ------------------------------------------------------------
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
@@ -141,16 +151,16 @@ builder.Services.AddScoped<IValidator<AuthResponseDto>, RefreshRequestDtoValidat
 builder.Services.AddScoped<IValidator<RevokeRequestDto>, RevokeRequestDtoValidator>();
 builder.Services.AddScoped<IValidator<LogoutRequestDto>, LogoutRequestDtoValidator>();
 
-builder.Services.Configure<RefreshTokenCleanupOptions>(builder.Configuration.GetSection("RefreshTokenCleanup"));
+builder.Services.Configure<RefreshTokenCleanupOptions>(
+    builder.Configuration.GetSection("RefreshTokenCleanup"));
 builder.Services.AddHostedService<RefreshTokenCleanupHostedService>();
 
-
-
-// --------------------------------------------
+// ------------------------------------------------------------
 // Controllers + Swagger
-// --------------------------------------------
+// ------------------------------------------------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -160,7 +170,6 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Internal API for SchoolWebsite CMS + Admin features"
     });
 
-    // Add JWT Bearer auth to Swagger UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -171,7 +180,6 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Paste ONLY the token here (without 'Bearer ')."
     });
 
-    // Apply Bearer globally (so endpoints show the lock icon automatically)
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -187,49 +195,47 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-// --------------------------------------------
-// Rate Limiter
-// --------------------------------------------
+
+// ------------------------------------------------------------
+// Rate Limiting
+// ------------------------------------------------------------
 builder.Services.AddRateLimiter(options =>
 {
-    // A: Global default (applies unless endpoint overrides)
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
     {
-        // Partition by IP
         var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
         return RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: ip,
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 200,                  // 200 requests
-                Window = TimeSpan.FromMinutes(1),   // per 1 minute
+                PermitLimit = 200,
+                Window = TimeSpan.FromMinutes(1),
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 0
             });
     });
+
     options.AddPolicy("login", httpContext =>
     {
         var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
         return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
         {
-            PermitLimit = 10,                 // 10 tries
-            Window = TimeSpan.FromMinutes(1), // per minute
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
             QueueLimit = 0
         });
     });
 
-
-    // Nice HTTP 429 response
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
 var app = builder.Build();
 
-// --------------------------------------------
+// ------------------------------------------------------------
 // Pipeline
-// --------------------------------------------
+// ------------------------------------------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -245,9 +251,50 @@ app.UseAuthorization();
 
 app.UseRateLimiter();
 
+// ------------------------------------------------------------
+// Health + Info endpoints
+// ------------------------------------------------------------
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var result = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new
+            {
+                name = e.Key,
+                status = e.Value.Status.ToString(),
+                error = e.Value.Exception?.Message
+            }),
+            totalDurationMs = report.TotalDuration.TotalMilliseconds
+        };
+
+        await context.Response.WriteAsJsonAsync(result);
+    }
+});
+
+// Simple info endpoint (helps with deploy debugging)
+app.MapGet("/info", () =>
+{
+    var commit = Environment.GetEnvironmentVariable("GIT_COMMIT") ?? "local";
+    return Results.Ok(new
+    {
+        name = "SchoolWebInternalAPI",
+        environment = app.Environment.EnvironmentName,
+        commit,
+        utc = DateTime.UtcNow
+    });
+});
+
 app.MapControllers();
 
-// Optional admin seed
+// ------------------------------------------------------------
+// Seed Admin
+// ------------------------------------------------------------
 using (var scope = app.Services.CreateScope())
 {
     await AdminSeeder.SeedAsync(scope.ServiceProvider);
@@ -256,4 +303,3 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 public partial class Program { }
-
