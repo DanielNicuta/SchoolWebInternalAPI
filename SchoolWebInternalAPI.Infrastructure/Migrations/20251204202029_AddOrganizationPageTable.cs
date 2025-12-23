@@ -1,0 +1,43 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace SchoolWebInternalAPI.Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class AddOrganizationPageTable : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "OrganizationPages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    DescriptionHtml = table.Column<string>(type: "TEXT", nullable: true),
+                    OrgChartImageUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    OrgChartFileUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    SeoTitle = table.Column<string>(type: "TEXT", nullable: true),
+                    SeoDescription = table.Column<string>(type: "TEXT", nullable: true),
+                    OgImageUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationPages", x => x.Id);
+                });
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "OrganizationPages");
+        }
+    }
+}
