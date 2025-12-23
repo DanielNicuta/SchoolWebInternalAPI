@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using SchoolWebInternalAPI.API.Responses;
+using SchoolWebInternalAPI.Application.Common.Models;
 
 namespace SchoolWebInternalAPI.API.Middlewares
 {
@@ -35,7 +35,7 @@ namespace SchoolWebInternalAPI.API.Middlewares
 
             var response = ApiResponse<string>.Fail(
                 "An unexpected error occurred.",
-                new List<string> { ex.Message }
+                500
             );
 
             var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
