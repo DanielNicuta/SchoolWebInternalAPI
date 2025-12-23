@@ -75,7 +75,6 @@ namespace SchoolWebInternalAPI.Infrastructure
             services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddIdentity<ApplicationUser, IdentityRole>();
 
             services.Configure<RefreshTokenCleanupOptions>(configuration.GetSection("RefreshTokenCleanup"));
             services.AddHostedService<RefreshTokenCleanupHostedService>();

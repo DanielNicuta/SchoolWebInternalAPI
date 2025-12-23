@@ -5,8 +5,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -33,18 +31,12 @@ using SchoolWebInternalAPI.Application.Validators.Pages.Mission;
 using SchoolWebInternalAPI.Application.Validators.Pages.Organization;
 using SchoolWebInternalAPI.Application.Validators.Pages.Settings;
 using SchoolWebInternalAPI.Application.Validators.Teachers;
-using SchoolWebInternalAPI.Domain.Entities; // ApplicationUser
 using SchoolWebInternalAPI.Infrastructure;
 using SchoolWebInternalAPI.Infrastructure.Data;
 using SchoolWebInternalAPI.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ------------------------------------------------------------
-// DbContext (IMPORTANT: ensure AddInfrastructure does NOT add it again)
-// ------------------------------------------------------------
-builder.Services.AddDbContext<SchoolDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ------------------------------------------------------------
 // Application + Infrastructure
@@ -61,30 +53,6 @@ builder.Services.AddHealthChecks()
         name: "school",
         failureStatus: HealthStatus.Unhealthy,
         tags: new[] { "ready" });
-
-// ------------------------------------------------------------
-// Identity (use ApplicationUser)
-// ------------------------------------------------------------
-builder.Services
-    .AddIdentityCore<ApplicationUser>(options =>
-    {
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireDigit = false;
-        options.Password.RequiredLength = 6;
-
-        options.User.RequireUniqueEmail = true;
-
-        // Lockout policy
-        options.Lockout.AllowedForNewUsers = true;
-        options.Lockout.MaxFailedAccessAttempts = 5;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-    })
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<SchoolDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
 
 // ------------------------------------------------------------
 // JWT Settings + Auth
@@ -153,7 +121,6 @@ builder.Services.AddScoped<IValidator<LogoutRequestDto>, LogoutRequestDtoValidat
 
 builder.Services.Configure<RefreshTokenCleanupOptions>(
     builder.Configuration.GetSection("RefreshTokenCleanup"));
-builder.Services.AddHostedService<RefreshTokenCleanupHostedService>();
 
 // ------------------------------------------------------------
 // Controllers + Swagger
