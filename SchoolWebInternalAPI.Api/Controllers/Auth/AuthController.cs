@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -85,6 +86,21 @@ namespace SchoolWebInternalAPI.Api.Controllers.Auth
                 return BadRequest("Invalid or already revoked refresh token.");
 
             return Ok("Logged out successfully.");
+        }
+        [Authorize] // any logged user
+        [HttpPost("logout-all")]
+        public async Task<IActionResult> LogoutAll()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? User.FindFirstValue("sub"); // fallback
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            var revoked = await _auth.RevokeAllAsync(userId);
+
+            // 200 even if none found is acceptable; your choice:
+            return Ok(new { success = true, revokedAny = revoked });
         }
     }
 }

@@ -128,6 +128,24 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
             return true;
         }
 
+        public async Task<bool> RevokeAllAsync(string userId)
+        {
+            var now = DateTime.UtcNow;
+
+            var tokens = await _db.RefreshTokens
+                .Where(x => x.UserId == userId && x.RevokedAt == null && x.ExpiresAt > now)
+                .ToListAsync();
+
+            if (tokens.Count == 0)
+                return false;
+
+            foreach (var t in tokens)
+                t.RevokedAt = now;
+
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
         // --------------------
         // helpers
         // --------------------
@@ -141,11 +159,13 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
 
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new(JwtRegisteredClaimNames.Sub, user.Id),
                 new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new("fullName", user.FullName ?? string.Empty),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+            
 
             // Roles for [Authorize(Roles="Admin")]
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));

@@ -8,5 +8,7 @@ namespace SchoolWebInternalAPI.Application.Interfaces.Auth
         Task<bool> RegisterAsync(string email, string password, string fullName);
         Task<AuthResponseDto?> RefreshAsync(string refreshToken);
         Task<bool> RevokeAsync(string refreshToken);
+        Task<bool> RevokeAllAsync(string userId);
+
     }
 }
