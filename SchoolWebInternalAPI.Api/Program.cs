@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolWebInternalAPI.API.Middlewares;
 using SchoolWebInternalAPI.Application;
+using SchoolWebInternalAPI.Application.DTOs.Auth;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Contact;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
 using SchoolWebInternalAPI.Application.DTOs.Pages.History;
@@ -19,6 +20,7 @@ using SchoolWebInternalAPI.Application.DTOs.Pages.Organization;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Settings;
 using SchoolWebInternalAPI.Application.DTOs.Teachers;
 using SchoolWebInternalAPI.Application.Mapping;
+using SchoolWebInternalAPI.Application.Validators.Auth;
 using SchoolWebInternalAPI.Application.Validators.Pages.Contact;
 using SchoolWebInternalAPI.Application.Validators.Pages.Footer;
 using SchoolWebInternalAPI.Application.Validators.Pages.History;
@@ -126,6 +128,14 @@ builder.Services.AddScoped<IValidator<LinksPageUpdateDto>, LinksPageUpdateDtoVal
 builder.Services.AddScoped<IValidator<MissionPageUpdateDto>, MissionPageUpdateDtoValidator>();
 builder.Services.AddScoped<IValidator<OrganizationPageUpdateDto>, OrganizationPageUpdateDtoValidator>();
 builder.Services.AddScoped<IValidator<SiteSettingsUpdateDto>, SiteSettingsUpdateDtoValidator>();
+
+builder.Services.AddScoped<IValidator<LoginDto>, LoginRequestDtoValidator>();
+builder.Services.AddScoped<IValidator<RegisterDto>, RegisterRequestDtoValidator>();
+builder.Services.AddScoped<IValidator<AuthResponseDto>, RefreshRequestDtoValidator>();
+builder.Services.AddScoped<IValidator<RevokeRequestDto>, RevokeRequestDtoValidator>();
+builder.Services.AddScoped<IValidator<LogoutRequestDto>, LogoutRequestDtoValidator>();
+
+
 
 // --------------------------------------------
 // Controllers + Swagger

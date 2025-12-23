@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Domain.Entities;
+using SchoolWebInternalAPI.Domain.Entities.Auth;
 using SchoolWebInternalAPI.Domain.Entities.Pages;
 using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 
@@ -19,6 +20,8 @@ namespace SchoolWebInternalAPI.Infrastructure.Data
         public DbSet<OrganizationPage> OrganizationPages { get; set; } = null!;
         public DbSet<SiteSettings> SiteSettings { get; set; } = null!;
         public DbSet<FooterContent> FooterContents { get; set; } = null!;
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
