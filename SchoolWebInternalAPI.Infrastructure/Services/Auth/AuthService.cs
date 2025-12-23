@@ -48,9 +48,11 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
 
             await _userManager.ResetAccessFailedCountAsync(user);
 
-
             var accessToken = await GenerateAccessToken(user);
-            var refreshToken = await CreateRefreshTokenAsync(user.Id);
+
+            // NEW: token family per login/session
+            var familyId = Guid.NewGuid();
+            var refreshToken = await CreateRefreshTokenAsync(user.Id, familyId, parentTokenId: null);
 
             return new AuthResponseDto
             {
@@ -74,11 +76,26 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
 
         public async Task<AuthResponseDto?> RefreshAsync(string refreshToken)
         {
+            // Track changes because we will revoke/rotate
             var tokenEntity = await _db.RefreshTokens
+                .AsTracking()
                 .FirstOrDefaultAsync(x => x.Token == refreshToken);
 
-            if (tokenEntity == null || !tokenEntity.IsActive)
+            if (tokenEntity == null)
                 return null;
+
+            // FAMILY REUSE DETECTION:
+            // If token is revoked and has been replaced, someone is trying to reuse it
+            if (!tokenEntity.IsActive)
+            {
+                if (tokenEntity.RevokedAt != null && !string.IsNullOrWhiteSpace(tokenEntity.ReplacedByToken))
+                {
+                    // Revoke entire family on reuse attempt
+                    await RevokeFamilyAsync(tokenEntity.UserId, tokenEntity.FamilyId);
+                }
+
+                return null;
+            }
 
             var user = await _userManager.FindByIdAsync(tokenEntity.UserId);
             if (user == null) return null;
@@ -89,15 +106,17 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
             var newRefresh = GenerateRefreshToken();
             tokenEntity.ReplacedByToken = newRefresh;
 
-            _db.RefreshTokens.Update(tokenEntity);
-
-            // Create new refresh token row
+            // Create new refresh token row in the SAME FAMILY
             var newEntity = new RefreshToken
             {
                 UserId = user.Id,
                 Token = newRefresh,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(_jwt.RefreshTokenDays <= 0 ? 7 : _jwt.RefreshTokenDays)
+                ExpiresAt = DateTime.UtcNow.AddDays(_jwt.RefreshTokenDays <= 0 ? 7 : _jwt.RefreshTokenDays),
+
+                // NEW: keep chain/family
+                FamilyId = tokenEntity.FamilyId,
+                ParentTokenId = tokenEntity.Id
             };
 
             _db.RefreshTokens.Add(newEntity);
@@ -115,14 +134,13 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
         public async Task<bool> RevokeAsync(string refreshToken)
         {
             var tokenEntity = await _db.RefreshTokens
+                .AsTracking()
                 .FirstOrDefaultAsync(x => x.Token == refreshToken);
 
             if (tokenEntity == null || tokenEntity.RevokedAt != null)
                 return false;
 
             tokenEntity.RevokedAt = DateTime.UtcNow;
-
-            _db.RefreshTokens.Update(tokenEntity);
             await _db.SaveChangesAsync();
 
             return true;
@@ -146,6 +164,24 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
             return true;
         }
 
+        // NEW: revoke all tokens in a family
+        private async Task RevokeFamilyAsync(string userId, Guid familyId)
+        {
+            var now = DateTime.UtcNow;
+
+            var tokens = await _db.RefreshTokens
+                .Where(x => x.UserId == userId && x.FamilyId == familyId && x.RevokedAt == null)
+                .ToListAsync();
+
+            if (tokens.Count == 0)
+                return;
+
+            foreach (var t in tokens)
+                t.RevokedAt = now;
+
+            await _db.SaveChangesAsync();
+        }
+
         // --------------------
         // helpers
         // --------------------
@@ -165,7 +201,6 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
                 new("fullName", user.FullName ?? string.Empty),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-            
 
             // Roles for [Authorize(Roles="Admin")]
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
@@ -184,7 +219,8 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private async Task<string> CreateRefreshTokenAsync(string userId)
+        // UPDATED: add family + parent
+        private async Task<string> CreateRefreshTokenAsync(string userId, Guid familyId, Guid? parentTokenId)
         {
             var refresh = GenerateRefreshToken();
 
@@ -193,7 +229,10 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
                 UserId = userId,
                 Token = refresh,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(_jwt.RefreshTokenDays <= 0 ? 7 : _jwt.RefreshTokenDays)
+                ExpiresAt = DateTime.UtcNow.AddDays(_jwt.RefreshTokenDays <= 0 ? 7 : _jwt.RefreshTokenDays),
+
+                FamilyId = familyId,
+                ParentTokenId = parentTokenId
             };
 
             _db.RefreshTokens.Add(entity);
