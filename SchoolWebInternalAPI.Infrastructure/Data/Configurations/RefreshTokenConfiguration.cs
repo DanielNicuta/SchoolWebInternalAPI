@@ -2,29 +2,28 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SchoolWebInternalAPI.Domain.Entities.Auth;
 
-namespace SchoolWebInternalAPI.Infrastructure.Data.Configurations
+namespace SchoolWebInternalAPI.Infrastructure.Data.Configurations;
+
+public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
-    public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+    public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        public void Configure(EntityTypeBuilder<RefreshToken> builder)
-        {
-            builder.ToTable("RefreshTokens");
+        builder.Property(x => x.UserId).HasMaxLength(256).IsRequired();
+        builder.Property(x => x.Token).HasMaxLength(512).IsRequired();
 
-            builder.HasKey(x => x.Id);
+        // Unique token (fast refresh lookup)
+        builder.HasIndex(x => x.Token).IsUnique();
 
-            builder.Property(x => x.UserId)
-                .IsRequired()
-                .HasMaxLength(450);
+        // Fast “delete all user tokens”
+        builder.HasIndex(x => x.UserId);
 
-            builder.Property(x => x.Token)
-                .IsRequired()
-                .HasMaxLength(500);
+        // Fast cleanup for expirations
+        builder.HasIndex(x => x.ExpiresAt);
 
-            builder.Property(x => x.ReplacedByToken)
-                .HasMaxLength(500);
+        // Fast cleanup for revoked tokens
+        builder.HasIndex(x => x.RevokedAt);
 
-            builder.HasIndex(x => x.Token).IsUnique();
-            builder.HasIndex(x => x.UserId);
-        }
+        // Optional: common cleanup filter patterns
+        builder.HasIndex(x => new { x.UserId, x.ExpiresAt });
     }
 }

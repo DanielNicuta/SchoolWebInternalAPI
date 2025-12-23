@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SchoolWebInternalAPI.Application.Common.Models;
 using SchoolWebInternalAPI.Application.DTOs.Auth;
 using SchoolWebInternalAPI.Application.Interfaces.Auth;
@@ -18,6 +19,7 @@ namespace SchoolWebInternalAPI.Api.Controllers.Auth
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("login")]
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login([FromBody] LoginDto request)
         {

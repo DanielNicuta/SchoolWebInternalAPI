@@ -35,8 +35,19 @@ namespace SchoolWebInternalAPI.Infrastructure.Identity
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return null;
 
-            if (!await _userManager.CheckPasswordAsync(user, password))
+            if (await _userManager.IsLockedOutAsync(user))
                 return null;
+
+            var ok = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!ok)
+            {
+                await _userManager.AccessFailedAsync(user);
+                return null;
+            }
+
+            await _userManager.ResetAccessFailedCountAsync(user);
+
 
             var accessToken = await GenerateAccessToken(user);
             var refreshToken = await CreateRefreshTokenAsync(user.Id);

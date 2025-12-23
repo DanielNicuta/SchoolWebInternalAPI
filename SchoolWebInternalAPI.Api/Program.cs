@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,6 +62,11 @@ builder.Services
         options.Password.RequireDigit = false;
         options.Password.RequiredLength = 6;
         options.User.RequireUniqueEmail = true;
+
+        // Lockout policy (brute force protection)
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<SchoolDbContext>()
@@ -135,6 +141,9 @@ builder.Services.AddScoped<IValidator<AuthResponseDto>, RefreshRequestDtoValidat
 builder.Services.AddScoped<IValidator<RevokeRequestDto>, RevokeRequestDtoValidator>();
 builder.Services.AddScoped<IValidator<LogoutRequestDto>, LogoutRequestDtoValidator>();
 
+builder.Services.Configure<RefreshTokenCleanupOptions>(builder.Configuration.GetSection("RefreshTokenCleanup"));
+builder.Services.AddHostedService<RefreshTokenCleanupHostedService>();
+
 
 
 // --------------------------------------------
@@ -178,6 +187,43 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+// --------------------------------------------
+// Rate Limiter
+// --------------------------------------------
+builder.Services.AddRateLimiter(options =>
+{
+    // A: Global default (applies unless endpoint overrides)
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+    {
+        // Partition by IP
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: ip,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 200,                  // 200 requests
+                Window = TimeSpan.FromMinutes(1),   // per 1 minute
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+    options.AddPolicy("login", httpContext =>
+    {
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,                 // 10 tries
+            Window = TimeSpan.FromMinutes(1), // per minute
+            QueueLimit = 0
+        });
+    });
+
+
+    // Nice HTTP 429 response
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
 
 var app = builder.Build();
 
@@ -196,6 +242,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 
