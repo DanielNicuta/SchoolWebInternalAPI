@@ -1,4 +1,4 @@
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
+using SchoolWebInternalAPI.Domain.Entities.Pages;
 
 namespace SchoolWebInternalAPI.Application.Interfaces.Pages
 {

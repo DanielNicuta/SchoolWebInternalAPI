@@ -46,7 +46,7 @@ namespace SchoolWebInternalAPI.Api.Controllers.Auth
 
         [HttpPost("refresh")]
         [AllowAnonymous]
-        public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh([FromBody] AuthResponseDto request)
+        public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh([FromBody] RevokeRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.RefreshToken))
                 return BadRequest(ApiResponse<AuthResponseDto>.Fail("Refresh token is required.", 400));

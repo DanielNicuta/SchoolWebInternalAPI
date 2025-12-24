@@ -8,7 +8,6 @@ using SchoolWebInternalAPI.Application.DTOs.Pages.Links;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Contact;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Settings;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 
 namespace SchoolWebInternalAPI.Application.Mapping
 {

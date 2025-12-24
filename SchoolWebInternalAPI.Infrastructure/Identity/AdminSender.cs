@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SchoolWebInternalAPI.Domain.Entities;
 using SchoolWebInternalAPI.Domain.Entities.Pages;
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
 using SchoolWebInternalAPI.Infrastructure.Data;
 
 namespace SchoolWebInternalAPI.Infrastructure.Identity;

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SchoolWebInternalAPI.Application.DTOs.Auth;
 using SchoolWebInternalAPI.Application.Interfaces.Auth;
-using SchoolWebInternalAPI.Domain.Entities;
 using SchoolWebInternalAPI.Domain.Entities.Auth;
 using SchoolWebInternalAPI.Infrastructure.Data;
 using System.IdentityModel.Tokens.Jwt;

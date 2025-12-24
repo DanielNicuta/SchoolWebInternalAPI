@@ -7,6 +7,17 @@ namespace SchoolWebInternalAPI.Application.Common.Models
         public T? Data { get; set; }
         public int StatusCode { get; set; }
 
+        public static ApiResponse<T> InternalServerError(string message = "An unexpected error occurred.")
+        {
+            return new ApiResponse<T>
+            {
+                Success = false,
+                Message = message,
+                Data = default,
+                StatusCode = 500
+            };
+        }
+
         public static ApiResponse<T> SuccessResponse(T data, string? message = null, int statusCode = 200)
         {
             return new ApiResponse<T>
