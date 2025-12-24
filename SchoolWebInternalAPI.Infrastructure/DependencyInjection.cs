@@ -24,28 +24,6 @@ namespace SchoolWebInternalAPI.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            // -----------------------
-            // DbContext
-            // -----------------------
-            services.AddDbContext<SchoolDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
-
-            // -----------------------
-            // Identity (registers IUserStore<ApplicationUser>)
-            // -----------------------
-            services.AddIdentityCore<ApplicationUser>(options =>
-            {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-            })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<SchoolDbContext>()   // ✅ THIS FIXES IUserStore error
-            .AddSignInManager()
-            .AddDefaultTokenProviders();
-
             // -------------------------------
             // Repositories
             // -------------------------------
@@ -61,23 +39,9 @@ namespace SchoolWebInternalAPI.Infrastructure
             services.AddScoped<ISiteSettingsRepository, SiteSettingsRepository>();
 
             // -------------------------------
-            // Application services
+            // Auth Implementation
             // -------------------------------
-            services.AddScoped<ITeacherService, TeacherService>();
-
-            services.AddScoped<IHomePageService, HomePageService>();
-            services.AddScoped<IContactPageService, ContactPageService>();
-            services.AddScoped<IFooterContentService, FooterContentService>();
-            services.AddScoped<IHistoryPageService, HistoryPageService>();
-            services.AddScoped<ILinksPageService, LinksPageService>();
-            services.AddScoped<IMissionPageService, MissionPageService>();
-            services.AddScoped<IOrganizationPageService, OrganizationPageService>();
-            services.AddScoped<ISiteSettingsService, SiteSettingsService>();
-
             services.AddScoped<IAuthService, AuthService>();
-
-            services.Configure<RefreshTokenCleanupOptions>(configuration.GetSection("RefreshTokenCleanup"));
-            services.AddHostedService<RefreshTokenCleanupHostedService>();
 
             return services;
         }

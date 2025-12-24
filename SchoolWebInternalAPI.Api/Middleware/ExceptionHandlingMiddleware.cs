@@ -33,10 +33,8 @@ namespace SchoolWebInternalAPI.API.Middlewares
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var response = ApiResponse<string>.Fail(
-                "An unexpected error occurred.",
-                500
-            );
+            var response = ApiResponse<string>.InternalServerError("An unexpected error occurred.");
+            context.Response.StatusCode = response.StatusCode;
 
             var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {
