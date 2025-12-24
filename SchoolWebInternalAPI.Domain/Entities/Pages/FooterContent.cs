@@ -1,6 +1,6 @@
 using System;
 
-namespace SchoolWebInternalAPI.Domain.Entities.PagesCSM
+namespace SchoolWebInternalAPI.Domain.Entities.Pages
 {
     public class FooterContent : BaseEntity
     {

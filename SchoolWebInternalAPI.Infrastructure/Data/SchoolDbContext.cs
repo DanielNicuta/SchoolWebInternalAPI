@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Domain.Entities;
 using SchoolWebInternalAPI.Domain.Entities.Auth;
 using SchoolWebInternalAPI.Domain.Entities.Pages;
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
+using SchoolWebInternalAPI.Infrastructure.Identity;
 
 namespace SchoolWebInternalAPI.Infrastructure.Data
 {
