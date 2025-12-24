@@ -3,7 +3,7 @@ using Moq;
 using SchoolWebInternalAPI.Application.Services.Pages;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
+using SchoolWebInternalAPI.Domain.Entities.Pages;
 
 namespace SchoolWebInternalAPI.Tests.Pages.Footer
 {

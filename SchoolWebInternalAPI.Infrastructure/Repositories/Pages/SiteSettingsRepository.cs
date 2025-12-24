@@ -1,7 +1,6 @@
-// Infrastructure/Repositories/Pages/SiteSettingsRepository.cs
 using Microsoft.EntityFrameworkCore;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
+using SchoolWebInternalAPI.Domain.Entities.Pages;
 using SchoolWebInternalAPI.Infrastructure.Data;
 
 namespace SchoolWebInternalAPI.Infrastructure.Repositories.Pages

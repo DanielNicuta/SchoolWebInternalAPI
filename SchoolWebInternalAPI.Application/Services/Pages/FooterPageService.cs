@@ -2,7 +2,7 @@ using AutoMapper;
 using SchoolWebInternalAPI.Application.Common.Models;
 using SchoolWebInternalAPI.Application.DTOs.Pages.Footer;
 using SchoolWebInternalAPI.Application.Interfaces.Pages;
-using SchoolWebInternalAPI.Domain.Entities.PagesCSM;
+using SchoolWebInternalAPI.Domain.Entities.Pages;
 
 namespace SchoolWebInternalAPI.Application.Services.Pages
 {

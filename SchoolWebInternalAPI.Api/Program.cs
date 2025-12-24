@@ -5,6 +5,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -37,6 +39,26 @@ using SchoolWebInternalAPI.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+// ------------------------------------------------------------
+// DB + Identity
+// ------------------------------------------------------------
+builder.Services.AddDbContext<SchoolDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<SchoolDbContext>()
+.AddSignInManager()
+.AddDefaultTokenProviders();
 
 // ------------------------------------------------------------
 // Application + Infrastructure
